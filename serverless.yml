@@ -1,0 +1,99 @@
+service: astoria-event
+
+provider:
+  name: aws
+  runtime: go1.x
+  stage: ${env:ENV}
+  region: us-east-1
+  environment:
+    GOOGLEGEO_API_KEY: ${GOOGLEGEO_API_KEY}
+    DYNAMODB_EVENT_TABLE: events
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:DescribeTable
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:*:*:*"
+
+package:
+ exclude:
+   - ./**
+ include:
+   - ./bin/**
+     
+functions:
+  newevent:
+    handler: bin/post
+    events:
+      - http:
+          path: event/create
+          description: "Creates new event on provided channel"
+          method: post
+          cors: true
+  deleteevent:
+    handler: bin/delete 
+    events:
+      - http:
+          path: event/delete 
+          description: "Remove existing event"
+          method: post        
+  updateevent:
+    handler: bin/update 
+    events:
+      - http:
+          path: event/update
+          description: "Update an existing event"
+          method: post
+  datetimeevent:
+    handler: bin/datetime 
+    events:
+      - http:
+          path: event/datetime
+          description: "Update start and end date times"
+          method: post
+  listevents:
+    handler: bin/listall 
+    events:
+      - http:
+          path: event/list
+          description: "List all events for client (API)"
+          method: get
+          cors: true
+  query:
+    handler: bin/query
+    events:
+      - http:
+          path: event/query
+          description: "Query events based on fields provided (client API)"
+          method: get
+          cors: true
+  listactives:
+    handler: bin/listactive 
+    events:
+      - http:
+          path: event/listactive
+          description: "List all active events for slack"
+          method: post
+          cors: true
+
+resources:
+  Resources:
+    TasksDynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: ID
+            AttributeType: S           
+        KeySchema:
+          - AttributeName: ID
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: events

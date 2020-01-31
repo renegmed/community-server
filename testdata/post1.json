@@ -1,0 +1,14 @@
+{ 
+    "id": "CH0001",
+    "channel": "Experimental",
+    "title": "Food Fair 2019",
+    "street": "123 Main St.",
+    "city": "Flushing",
+    "county": "Queens",
+    "state": "NY",
+    "postalcode": "11012",
+    "country": "US",
+    "lat": 40.757121,
+    "lon": -73.970382,
+    "contact": "Joe Doe"
+}

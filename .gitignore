@@ -1,0 +1,10 @@
+/vendor
+/bin
+/.serverless
+.env
+resp_deploy.txt
+geolocation/geoservice_test.go 
+geolocation/geolocation.go 
+
+
+
